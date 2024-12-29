@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IHA Uretim{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'production/css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">Ana Sayfa</a></li>
+                <li><a href="{% url 'listParts' %}">Parcaları Listele</a></li>
+                <li><a href="{% url 'produceParts' %}">Parca Uret</a></li>
+                <li><a href="{% url 'assemble_and_view_drones' %}">Montaj</a></li> 
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'index' %}">Cikis</a></li>
+                {% else %}
+                    <li><a href="{% url 'index' %}">Giris</a></li>
+                    <li><a href="{% url 'index' %}">Kayit</a></li> 
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Display error messages -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert {{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="welcome-message">
+            {% block content %}
+            <!-- Default content -->
+            {% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 IHA kiralam uygulamasi.</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

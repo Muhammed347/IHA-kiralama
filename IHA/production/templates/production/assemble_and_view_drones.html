@@ -1,0 +1,31 @@
+{% extends "production/base.html" %}
+
+{% block title %}Assemble Drone{% endblock %}
+
+{% block content %}
+    <h1>Assemble a Drone</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="drone_model">Drone Model:</label>
+        <select id="drone_model" name="drone_model" required>
+            {% for drone in drones %}
+            <option value="{{ drone }}">{{ drone }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit">Assemble</button>
+    </form>
+
+    <h2>Parts Status</h2>
+    <ul>
+        {% for part in required_parts %}
+            <li>{{ part.name }}: 
+                {% if part.is_available %}
+                    <span style="color: green;">Available</span>
+                {% else %}
+                    <span style="color: red;">Missing</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "production/base.html" %}
+
+{% block title %}List Parts{% endblock %}
+
+{% block content %}
+    <h1>Available Parts</h1>
+    {% if parts %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Part Name</th>
+                    <th>Assigned Team</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for part in parts %}
+                <tr>
+                    <td>{{ part.name }}</td>
+                    <td>{{ part.team }}</td>
+                    <td>{{ part.quantity }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No parts available at the moment.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'production/base.html' %}
+
+{% block title %}IHA Uretim Uygulamasina Hosgeldiniz{% endblock %}
+
+{% block content %}
+        {% if user.is_authenticated %}
+            <h1>Hosgeldiniz, {{ user.username }}!</h1>
+        {% else %}
+            <h1>Merhaba</h1>
+            <p>Uygulama Ozelliklerine Erişebilmek için<a href="{% url 'index' %}"> Giris </a>yapin veya <a href="{% url 'index' %}"> Kayit </a>olun</p>
+        {% endif %}
+{% endblock %}
