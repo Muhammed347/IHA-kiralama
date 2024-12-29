@@ -17,10 +17,10 @@
                 <li><a href="{% url 'produceParts' %}">Parca Uret</a></li>
                 <li><a href="{% url 'assemble_and_view_drones' %}">Montaj</a></li> 
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'index' %}">Cikis</a></li>
+                    <li><a href="{% url 'logout' %}" onclick="return confirmLogout(event)">Cikis</a></li>
                 {% else %}
-                    <li><a href="{% url 'index' %}">Giris</a></li>
-                    <li><a href="{% url 'index' %}">Kayit</a></li> 
+                    <li><a href="{% url 'login' %}">Giris</a></li>
+                    <li><a href="{% url 'register' %}">Kayit</a></li> 
                 {% endif %}
             </ul>
         </nav>
@@ -37,6 +37,7 @@
             {% endfor %}
         </div>
         {% endif %}
+
         <div class="welcome-message">
             {% block content %}
             <!-- Default content -->
@@ -48,6 +49,15 @@
         <p>&copy; 2024 IHA kiralam uygulamasi.</p>
     </footer>
 
+    <script>
+        function confirmLogout(event) {
+            if (!confirm("Are you sure you want to log out?")) {
+                event.preventDefault(); // Prevent the link from being followed
+                return false;
+            }
+            return true;
+        }
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

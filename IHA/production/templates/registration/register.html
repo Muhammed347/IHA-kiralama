@@ -1,0 +1,47 @@
+{% extends "production/base.html" %}
+
+{% block extra_css %}
+
+<style>
+    form div {
+        margin-bottom: 10px;
+    }
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    input {
+        width: 25%;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+</style>
+
+{% endblock %}
+
+{% block title %}Kayit{% endblock %}
+
+{% block content %}
+<h2>Kayit</h2>
+<form method="post">
+    {% csrf_token %}
+    <div>
+        <label for="id_username">Kullanici Adi:</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+    </div>
+    <div>
+        <label for="id_password1">Sifre:</label>
+        {{ form.password1 }}
+        {{ form.password1.errors }}
+    </div>
+    <div>
+        <label for="id_password2">Sifre Onaylayin:</label>
+        {{ form.password2 }}
+        {{ form.password2.errors }}
+    </div>
+    <button type="submit">Kayit ol</button>
+</form>
+<p>Zaten hesabiniz varsa: <a href="{% url 'login' %}">Giris</a>.</p>
+{% endblock %}

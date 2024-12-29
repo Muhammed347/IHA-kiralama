@@ -7,6 +7,6 @@
             <h1>Hosgeldiniz, {{ user.username }}!</h1>
         {% else %}
             <h1>Merhaba</h1>
-            <p>Uygulama Ozelliklerine Erişebilmek için<a href="{% url 'index' %}"> Giris </a>yapin veya <a href="{% url 'index' %}"> Kayit </a>olun</p>
+            <p>Uygulama Ozelliklerine Erişebilmek için<a href="{% url 'login' %}"> Giris </a>yapin veya <a href="{% url 'register' %}"> Kayit </a>olun</p>
         {% endif %}
 {% endblock %}
