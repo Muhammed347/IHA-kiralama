@@ -3,27 +3,58 @@
 {% block title %}List Parts{% endblock %}
 
 {% block content %}
-    <h1>Available Parts</h1>
+    <h1>{{user.employee_profile.team}} Parcalari</h1>
     {% if parts %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Part Name</th>
-                    <th>Assigned Team</th>
-                    <th>Quantity</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for part in parts %}
-                <tr>
-                    <td>{{ part.name }}</td>
-                    <td>{{ part.team }}</td>
-                    <td>{{ part.quantity }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <ul>
+            {% for part in parts %}
+                <li>
+                    <strong>Part ID:</strong> {{ part.pk }}<br>
+                    <strong>Aircraft Name:</strong> {{ part.aircraftname }}<br>
+                    <strong>Status:</strong> {{ part.status }}<br>
+                    <form method="post" action="{% url 'delete_part' part.pk %}">
+                        {% csrf_token %}
+                        <button 
+                            type="submit" 
+                            class="delete-button" 
+                            data-part-id="{{ part.pk }}" 
+                            data-part-status="{{ part.status }}">
+                            Delete
+                        </button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
     {% else %}
-        <p>No parts available at the moment.</p>
+        <p>Hic {{user.employee_profile.team}} parcasi bulunmuyor.</p>
     {% endif %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteButtons = document.querySelectorAll(".delete-button");
+
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault(); // Prevent form submission
+                const partId = this.dataset.partId;
+                const partStatus = this.dataset.partStatus;
+
+                let confirmationMessage = `Are you sure you want to delete part ID ${partId}?`;
+                
+                if (partStatus === "used") {
+                    confirmationMessage += " Note: This part is marked as 'used' and cannot be restored.";
+                }
+
+                const confirmation = confirm(confirmationMessage);
+
+                if (confirmation) {
+                    // Submit the form programmatically if the user confirms
+                    this.closest("form").submit();
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

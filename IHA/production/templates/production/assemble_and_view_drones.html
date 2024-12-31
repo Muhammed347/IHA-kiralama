@@ -1,31 +1,43 @@
 {% extends "production/base.html" %}
 
-{% block title %}Assemble Drone{% endblock %}
+{% block title %}Montaj Sayfasi{% endblock %}
 
 {% block content %}
-    <h1>Assemble a Drone</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="drone_model">Drone Model:</label>
-        <select id="drone_model" name="drone_model" required>
-            {% for drone in drones %}
-            <option value="{{ drone }}">{{ drone }}</option>
-            {% endfor %}
-        </select><br><br>
+<h1>Montaj Sayfasi</h1>
 
-        <button type="submit">Assemble</button>
-    </form>
 
-    <h2>Parts Status</h2>
-    <ul>
-        {% for part in required_parts %}
-            <li>{{ part.name }}: 
-                {% if part.is_available %}
-                    <span style="color: green;">Available</span>
-                {% else %}
-                    <span style="color: red;">Missing</span>
-                {% endif %}
-            </li>
+<h2>Yeni IHA olustur</h2>
+<form method="post" action="{% url 'assemble_and_view_drones' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Olustur</button>
+</form>
+
+<h2>IHA Listesi</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Ucak adi</th>
+            <th>Kanat</th>
+            <th>Govde</th>
+            <th>Kuyruk</th>
+            <th>Avyonik</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for aircraft in aircrafts %}
+        <tr>
+            <td>{{ aircraft.aircraftname }}</td>
+            <td>{{ aircraft.wing }}</td>
+            <td>{{ aircraft.body }}</td>
+            <td>{{ aircraft.tail }}</td>
+            <td>{{ aircraft.avionics }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">Hic ucak bulunmuyor.</td>
+        </tr>
         {% endfor %}
-    </ul>
+    </tbody>
+</table>
 {% endblock %}

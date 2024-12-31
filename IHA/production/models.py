@@ -36,7 +36,9 @@ class Status(Enum):
     @classmethod
     def choices(cls):
         return [(tag.name, tag.value) for tag in cls]
-    
+
+#each employee keeps user and the information of the team to which he is assigned 
+#when a employee created using user, automatically assigned to a group using the signal function   
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee_profile")
     team = models.CharField(max_length=50, choices=Team.choices(), blank=True, null=True)
@@ -81,10 +83,43 @@ class AvionicsPart(BasePart):
 
 class AirCraft(models.Model):
     aircraftname = models.CharField(max_length=50, choices=AircraftName.choices(), blank=False, null=False)
-    wing = models.OneToOneField(WingPart, on_delete=models.CASCADE, blank=False, null=False)
-    body = models.OneToOneField(BodyPart, on_delete=models.CASCADE, blank=False, null=False)
-    tail = models.OneToOneField(TailPart, on_delete=models.CASCADE, blank=False, null=False)
-    avionics = models.OneToOneField(AvionicsPart, on_delete=models.CASCADE, blank=False, null=False)
+    wing = models.OneToOneField(WingPart, on_delete=models.CASCADE, blank=False, null=False, related_name="assigned_aircraft")
+    body = models.OneToOneField(BodyPart, on_delete=models.CASCADE, blank=False, null=False, related_name="assigned_aircraft")
+    tail = models.OneToOneField(TailPart, on_delete=models.CASCADE, blank=False, null=False, related_name="assigned_aircraft")
+    avionics = models.OneToOneField(AvionicsPart, on_delete=models.CASCADE, blank=False, null=False, related_name="assigned_aircraft")
+
+    def save(self, *args, **kwargs):
+        if self.wing.status != Status.unused.value or \
+        self.body.status != Status.unused.value or \
+        self.tail.status != Status.unused.value or \
+        self.avionics.status != Status.unused.value:
+            raise ValueError("Tum ucak Parcalari kullanilmamis olmali '.")
+        
+
+        # Validate that all parts have the same aircraftname as the aircraft
+        if (
+            self.wing.aircraftname != self.aircraftname or
+            self.body.aircraftname != self.aircraftname or
+            self.tail.aircraftname != self.aircraftname or
+            self.avionics.aircraftname != self.aircraftname
+        ):
+            raise ValueError("Kullanilan butun parcalar ucak modeliyle ayni modele sahip olmali.")
+
+        super().save(*args, **kwargs)
+
+        # Update the status of the used parts to "used"
+        self.wing.status = Status.used.value
+        self.wing.save(update_fields=["status"])
+        
+        self.body.status = Status.used.value
+        self.body.save(update_fields=["status"])
+        
+        self.tail.status = Status.used.value
+        self.tail.save(update_fields=["status"])
+        
+        self.avionics.status = Status.used.value
+        self.avionics.save(update_fields=["status"])
+
 
     def __str__(self):
         return f"{self.aircraftname}_({self.pk})"
