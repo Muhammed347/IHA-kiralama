@@ -6,19 +6,106 @@ from django.contrib import messages
 from .models import WingPart, BodyPart, AvionicsPart, TailPart, AirCraft
 from .forms import WingPartForm, BodyPartForm, AirCraftForm, TailPartForm, AvionicsPartForm
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
+from functools import wraps
+from django.http import JsonResponse
 # Create your views here.
 
 
 
 
 def index(request):
+    """route user to home page"""
     return render(request, 'production/index.html')
+
+def login_required_with_message(view_func):
+    """
+    Decorator to ensure the user is authenticated before accessing the view.
+
+    If the user is not authenticated:
+    - Displays an error message.
+    - Redirects to the login page for standard requests.
+    - For AJAX requests, returns a JSON response with a 401 Unauthorized status.
+
+    Args:
+        view_func (function): The view function to be decorated.
+
+    Returns:
+        function: The wrapped view function.
+    """
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.error(request, "Bu sayfaya erismek icin giris yapmaniz gerekiyor.")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # For AJAX requests, return a JSON response with status 401
+                return JsonResponse({"error": "Unauthorized. Please log in."}, status=401)
+            return redirect("login")
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+
+def user_team_required(team_name):
+    """
+    Decorator to restrict access to views based on the user's team.
+
+    Ensures that the user belongs to the specified team:
+    - Displays an error message and redirects to the index page for unauthorized users.
+    - For AJAX requests, returns a JSON response with appropriate status codes:
+      - 403 Forbidden for unauthorized users.
+      - 400 Bad Request if the employee profile is not found.
+
+    Args:
+        team_name (str): The required team name.
+
+    Returns:
+        function: A decorator that wraps the view function.
+    """
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            try:
+                employee = request.user.employee_profile
+                if employee.team != team_name:
+                    messages.error(request, "Bu sayfaya erismek icin yetkili degilsiniz.")
+                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # For AJAX requests, return a JSON response with status 403
+                        return JsonResponse({"error": "Forbidden. You lack the necessary team permissions."}, status=403)
+                    return redirect("index")
+            except AttributeError:
+                messages.error(request, "Herhangi bir takima ait degilsiniz.")
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # For AJAX requests, return a JSON response with status 400
+                    return JsonResponse({"error": "Bad Request. Employee profile not found."}, status=400)
+                return redirect("index")
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
 
 
 # List parts view to show the parts created
+@login_required_with_message
 def list_parts(request):
-    employee = request.user.employee_profile
+    """
+    View for listing parts based on the user's team.
+
+    Checks the user's team affiliation and retrieves the corresponding parts:
+    - 'kanat': Retrieves WingPart objects.
+    - 'govde': Retrieves BodyPart objects.
+    - 'kuyruk': Retrieves TailPart objects.
+    - 'aviyonik': Retrieves AvionicsPart objects.
+    - If the user is not in a recognized team, displays an error and redirects to the index page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: Renders the list of parts for the team or redirects with an error.
+    """
+    # Check if the user belongs to any team
+    try:
+        employee = request.user.employee_profile
+    except AttributeError:
+        messages.error(request, "Hicbir takima ait değilsiniz.")
+        return redirect("index")
     
+    #determine which team user belongs
     if employee.team == 'kanat':
         parts = WingPart.objects.all()
     elif employee.team == 'govde':
@@ -34,14 +121,32 @@ def list_parts(request):
     return render(request, 'production/list_parts.html', {'parts': parts})
 
 # View for producing parts
+@login_required_with_message
 def produce_parts(request):
-    # Check the user’s team to display the appropriate form
-    if not request.user.is_authenticated:
-        messages.error(request, "Bu sayfaya erisebilmek icin giris yapmaniz gerekir.")
-        return redirect('login')
+    """
+    View for rendering the form to produce parts based on the user's team.
 
-    employee = request.user.employee_profile  
+    Checks the user's team affiliation and renders the corresponding form:
+    - 'kanat': Displays the WingPartForm.
+    - 'govde': Displays the BodyPartForm.
+    - 'kuyruk': Displays the TailPartForm.
+    - 'aviyonik': Displays the AvionicsPartForm.
+    - If the user is not in a recognized team, displays an error and redirects to the index page.
 
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: Renders the form for part production or redirects with an error.
+    """
+    # Check if the user belongs to any team
+    try:
+        employee = request.user.employee_profile
+    except AttributeError:
+        messages.error(request, "Hicbir takima ait değilsiniz.")
+        return redirect("index")
+    
+    #determine which team user belongs
     if employee.team == 'kanat':
         form = WingPartForm()
     elif employee.team == 'govde':
@@ -57,14 +162,24 @@ def produce_parts(request):
     return render(request, 'production/produce_parts.html', {'form': form})
 
 
-# Helper function to check if the user is in the assembly team
-def is_assembly_team(user):
-    return user.employee_profile.team == "montaj"
 
 
-@login_required
-@user_passes_test(is_assembly_team, login_url="login")
+@login_required_with_message
+@user_team_required("montaj")
 def assemble_and_view_drones(request):
+    """
+    View for assembling and viewing aircraft.
+
+    Handles aircraft creation using a form. If the form is submitted and valid, 
+    the aircraft is saved and the user is redirected back to the same page. 
+    Displays all existing aircraft objects to the user.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: Renders the assembly and viewing page.
+    """
     if request.method == "POST":
         form = AirCraftForm(request.POST)
         if form.is_valid():
@@ -86,9 +201,28 @@ def assemble_and_view_drones(request):
     return render(request, "production/assemble_and_view_drones.html", context)
 
 
+@login_required_with_message
 def delete_part(request, part_id):
-    # Get the user's team
-    user_team = request.user.employee_profile.team
+    """
+    View for deleting a part based on the user's team.
+
+    Determines the correct model to delete based on the user's team. 
+    If the user is not authorized, an error message is displayed. 
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+        part_id (int): The ID of the part to be deleted.
+
+    Returns:
+        HttpResponse: Redirects to the parts listing page or an error message.
+    """
+    # Check if the user belongs to any team.
+    try:
+        user_team = request.user.employee_profile.team
+    except AttributeError:
+        messages.error(request, "Hicbir takima ait değilsiniz.")
+        return redirect("index")
+    
     part_model = None
 
     # Determine the correct model based on the team
@@ -117,8 +251,22 @@ def delete_part(request, part_id):
 
 
 # Functions for adding parts for each team
+@login_required_with_message
+@user_team_required("kanat")
 def add_wing_part(request):
-    if request.method == 'POST' and request.user.has_perm('production.add_wingpart'):
+    """
+    view to add parts based on the team and form class.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+        team_name (str): The name of the team that has access to this view.
+        form_class (Form): The form class used for creating the part.
+        success_message (str): The success message to display upon successful creation.
+
+    Returns:
+        HttpResponse: Redirects to the parts listing page or an error message.
+    """
+    if request.method == 'POST':
         form = WingPartForm(request.POST)
         if form.is_valid():
             part = form.save()
@@ -130,8 +278,10 @@ def add_wing_part(request):
         messages.error(request, "Kanat parcasi ekleme yetkiniz yok.")
         return redirect('index')
 
+@login_required_with_message
+@user_team_required("govde")
 def add_body_part(request):
-    if request.method == 'POST' and request.user.has_perm('production.add_bodypart'):
+    if request.method == 'POST':
         form = BodyPartForm(request.POST)
         if form.is_valid():
             part = form.save()
@@ -143,8 +293,10 @@ def add_body_part(request):
         messages.error(request, "Govde parcasi ekleme yetkiniz yok.")
         return redirect('index')
 
+@login_required_with_message
+@user_team_required("kuyruk")
 def add_tail_part(request):
-    if request.method == 'POST' and request.user.has_perm('production.add_tailpart'):
+    if request.method == 'POST':
         form = TailPartForm(request.POST)
         if form.is_valid():
             part = form.save()
@@ -156,8 +308,10 @@ def add_tail_part(request):
         messages.error(request, "Kuyruk parcasi ekleme yetkiniz yok.")
         return redirect('index')
 
+@login_required_with_message
+@user_team_required("aviyonik")
 def add_avionik_part(request):
-    if request.method == 'POST' and request.user.has_perm('production.add_avionicspart'):
+    if request.method == 'POST':
         form = AvionicsPartForm(request.POST)
         if form.is_valid():
             part = form.save()
@@ -169,6 +323,8 @@ def add_avionik_part(request):
         messages.error(request, "Aviyonik parcasi ekleme yetkiniz yok.")
         return redirect('index')
     
+
+
 
 
 

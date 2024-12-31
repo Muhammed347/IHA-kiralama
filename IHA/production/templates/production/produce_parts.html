@@ -1,23 +1,33 @@
 {% extends "production/base.html" %}
 
-{% block title %} {{ user.employee_profile.team }} parca uretme sayfasi{% endblock %}
+{% block title %}{{ user.employee_profile.team }} Parça Üretme Sayfası{% endblock %}
 
 {% block content %}
-    <h1>{{ user.employee_profile.team }} parcasi uretin</h1>
+    <div class="container">
+        <h1 class="page-title">{{ user.employee_profile.team }} Parçası Üretin</h1>
 
-    <form method="post" action="
-        {% if user.employee_profile.team == 'kanat' %}
-            {% url 'add_wing_part' %}
-        {% elif user.employee_profile.team == 'govde' %}
-            {% url 'add_body_part' %}
-        {% elif user.employee_profile.team == 'kuyruk' %}
-            {% url 'add_tail_part' %}
-        {% elif user.employee_profile.team == 'aviyonik' %}
-            {% url 'add_avionik_part' %}
-        {% endif %}
-    ">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
-    </form>
+        <div class="form-container">
+            <form method="post" action="
+                {% if user.employee_profile.team == 'kanat' %}
+                    {% url 'add_wing_part' %}
+                {% elif user.employee_profile.team == 'govde' %}
+                    {% url 'add_body_part' %}
+                {% elif user.employee_profile.team == 'kuyruk' %}
+                    {% url 'add_tail_part' %}
+                {% elif user.employee_profile.team == 'aviyonik' %}
+                    {% url 'add_avionik_part' %}
+                {% endif %}
+            ">
+                {% csrf_token %}
+                
+                <!-- Display form fields -->
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="btn-submit">Parça Üret</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}

@@ -23,25 +23,27 @@
 {% block title %}Kayit{% endblock %}
 
 {% block content %}
-<h2>Kayit</h2>
-<form method="post">
-    {% csrf_token %}
-    <div>
-        <label for="id_username">Kullanici Adi:</label>
-        {{ form.username }}
-        {{ form.username.errors }}
-    </div>
-    <div>
-        <label for="id_password1">Sifre:</label>
-        {{ form.password1 }}
-        {{ form.password1.errors }}
-    </div>
-    <div>
-        <label for="id_password2">Sifre Onaylayin:</label>
-        {{ form.password2 }}
-        {{ form.password2.errors }}
-    </div>
-    <button type="submit">Kayit ol</button>
-</form>
-<p>Zaten hesabiniz varsa: <a href="{% url 'login' %}">Giris</a>.</p>
+<div class="welcome-message">
+    <h2>Kayit</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <label for="id_username">Kullanici Adi:</label>
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
+        <div>
+            <label for="id_password1">Sifre:</label>
+            {{ form.password1 }}
+            {{ form.password1.errors }}
+        </div>
+        <div>
+            <label for="id_password2">Sifre Onaylayin:</label>
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+        </div>
+        <button type="submit">Kayit ol</button>
+    </form>
+    <p>Zaten hesabiniz varsa: <a href="{% url 'login' %}">Giris</a>.</p>
+</div>
 {% endblock %}

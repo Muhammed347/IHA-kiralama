@@ -38,13 +38,16 @@ class Status(Enum):
         return [(tag.name, tag.value) for tag in cls]
 
 #each employee keeps user and the information of the team to which he is assigned 
-#when a employee created using user, automatically assigned to a group using the signal function   
+#When an employee is created using the user, automatically assigned to a group using the signal function   
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee_profile")
     team = models.CharField(max_length=50, choices=Team.choices(), blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username} ({self.team})"
+    
+    class Meta:
+        verbose_name_plural = "Team"
 
 
 # wing, body, tail models will derived from this BasePart class

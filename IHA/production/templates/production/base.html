@@ -38,11 +38,11 @@
         </div>
         {% endif %}
 
-        <div class="welcome-message">
+        <!-- <div class="welcome-message"> </div> -->
             {% block content %}
             <!-- Default content -->
             {% endblock %}
-        </div>
+        
     </main>
 
     <footer>
@@ -51,12 +51,27 @@
 
     <script>
         function confirmLogout(event) {
-            if (!confirm("Are you sure you want to log out?")) {
+            if (!confirm("Cikis islemini onayliyor musunuz?")) {
                 event.preventDefault(); // Prevent the link from being followed
                 return false;
             }
             return true;
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Select all alert messages
+            const alerts = document.querySelectorAll('.alert');
+
+            // Loop through each alert and set a timeout to hide it
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    alert.style.opacity = '0';  // Fade out the message
+                    setTimeout(function() {
+                        alert.style.display = 'none';  // Hide the message completely after fade out
+                    }, 500);  // Delay for fade out effect (500ms)
+                }, 3000);  // Delay before disappearing (3000ms = 3 seconds)
+            });
+        });
     </script>
     {% block extra_js %}{% endblock %}
 </body>

@@ -4,15 +4,15 @@ from .models import Employee, WingPart, BodyPart, TailPart, AvionicsPart, AirCra
 
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ("user", "team")  # Display these fields in the admin list view
-    search_fields = ("user__username", "team")  # Add search functionality
-    list_filter = ("team",)  # Add filtering by team
+    list_display = ("user", "team")  
+    search_fields = ("user__username", "team")  
+    list_filter = ("team",)  
 
 
 @admin.register(WingPart)
 class WingPartAdmin(admin.ModelAdmin):
-    list_display = ("aircraftname", "status")  # Display aircraft and status
-    list_filter = ("aircraftname", "status")  # Add filters for aircraft and status
+    list_display = ("aircraftname", "status")  
+    list_filter = ("aircraftname", "status")  
 
 
 @admin.register(BodyPart)

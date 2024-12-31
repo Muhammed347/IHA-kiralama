@@ -11,17 +11,20 @@ body {
 /* Center Content */
 main {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 70vh; /* Center contents vertically, excluding header and footer */
-    text-align: center;
+    justify-content: center; /* Horizontally center the content */
+    align-items: center;     /* Vertically center the content */
+    min-height: 100vh;       /* Ensure it takes up at least the full height of the viewport */
+    padding: 20px;
+    box-sizing: border-box;
+    flex-direction: column;  /* Align content vertically if needed */
+    text-align: center;      /* Center the text */
 }
-
 /* Header Styles */
 header {
     background-color: #28a745;
     color: #fff;
-    padding: 10px 0;
+    padding: 15px 0;
+    text-align: center;
 }
 
 header nav ul {
@@ -48,6 +51,7 @@ header nav ul li a:hover {
     text-decoration: underline;
 }
 
+
 /* Footer Styles */
 footer {
     background-color: #28a745;
@@ -59,6 +63,7 @@ footer {
     width: 100%;
 }
 
+
 /* Welcome Message */
 .welcome-message {
     background-color: #fff;
@@ -66,10 +71,9 @@ footer {
     border-radius: 5px;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: 1500px;
-    max-height: 2000px;
-    width: 90%;
-    height: 90%;
+    max-width: 800px;
+    width: 100%;
+    margin: 20px 0;
 }
 
 /* Links */
@@ -87,6 +91,7 @@ a:hover {
     margin: 10px auto;
     max-width: 600px;
     width: 90%;
+    border-radius: 5px;
 }
 
 .alert {
@@ -109,6 +114,151 @@ a:hover {
     border: 1px solid #f5c6cb;
 }
 
+
+/* Table Styles */
+table {
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: collapse;
+    background-color: #fff;
+}
+
+table th, table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Table Styling */
+.parts-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.parts-table th, .parts-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.parts-table th {
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+}
+
+.parts-table td {
+    background-color: #f9f9f9;
+}
+
+.parts-table tr:hover {
+    background-color: #e9e9e9;
+}
+
+
+/* List Styles */
+ul, ol {
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+ul li, ol li {
+    margin: 5px 0;
+}
+
+/* Button Styling */
+button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+
+/* Container for the page */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Title Styling */
+.page-title {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+/* Form Container Styling */
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* Form group for individual input styling */
+.form-group {
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 600px;
+}
+
+form input,
+form select,
+form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1em;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+    border-color: #28a745;
+    outline: none;
+}
+
+/* Submit Button Styling */
+.btn-submit {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 25px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #218838;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
     header nav ul {
@@ -119,5 +269,12 @@ a:hover {
     main {
         height: auto;
         padding: 20px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+    .page-title {
+        font-size: 2em;
     }
 }

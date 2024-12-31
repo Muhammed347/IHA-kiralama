@@ -3,30 +3,45 @@
 {% block title %}List Parts{% endblock %}
 
 {% block content %}
-    <h1>{{user.employee_profile.team}} Parcalari</h1>
+<div class="container">
+    <h1>{{ user.employee_profile.team }} Parçaları</h1>
+
     {% if parts %}
-        <ul>
-            {% for part in parts %}
-                <li>
-                    <strong>Part ID:</strong> {{ part.pk }}<br>
-                    <strong>Aircraft Name:</strong> {{ part.aircraftname }}<br>
-                    <strong>Status:</strong> {{ part.status }}<br>
-                    <form method="post" action="{% url 'delete_part' part.pk %}">
-                        {% csrf_token %}
-                        <button 
-                            type="submit" 
-                            class="delete-button" 
-                            data-part-id="{{ part.pk }}" 
-                            data-part-status="{{ part.status }}">
-                            Delete
-                        </button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
+        <table class="parts-table">
+            <thead>
+                <tr>
+                    <th>Part ID</th>
+                    <th>Aircraft Name</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for part in parts %}
+                    <tr>
+                        <td>{{ part.pk }}</td>
+                        <td>{{ part.aircraftname }}</td>
+                        <td>{{ part.status }}</td>
+                        <td>
+                            <form method="post" action="{% url 'delete_part' part.pk %}" class="delete-form">
+                                {% csrf_token %}
+                                <button 
+                                    type="submit" 
+                                    class="delete-button" 
+                                    data-part-id="{{ part.pk }}" 
+                                    data-part-status="{{ part.status }}">
+                                    Sil
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% else %}
-        <p>Hic {{user.employee_profile.team}} parcasi bulunmuyor.</p>
+        <p>Hiç {{ user.employee_profile.team }} parçası bulunmuyor.</p>
     {% endif %}
+</div>
 {% endblock %}
 
 
@@ -41,10 +56,10 @@
                 const partId = this.dataset.partId;
                 const partStatus = this.dataset.partStatus;
 
-                let confirmationMessage = `Are you sure you want to delete part ID ${partId}?`;
+                let confirmationMessage = `Silme islemini onayliyor musunuz?`;
                 
                 if (partStatus === "used") {
-                    confirmationMessage += " Note: This part is marked as 'used' and cannot be restored.";
+                    confirmationMessage += "Bu parca bir ucakta kullaniliyor. silme islemine devam etmek istiyor musunuz?";
                 }
 
                 const confirmation = confirm(confirmationMessage);
