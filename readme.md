@@ -52,10 +52,23 @@ docker-compose up
 docker exec -it django_app python manage.py test
 ```
 
+
+# Step 8: You can use the following command to automatically generate 5 users for each team.(optional)
+```bash
+docker exec -it django_app  python manage.py add_users
+```
+-automatically generated user account information:
+kanat_user password123
+govde_user password123 
+kuyruk_user password123
+aviyonik_user password123
+montaj_user password123
+
+
 # App screenshots
-![mainPage](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/giris_ekrani.PNG?raw=true)
-![admin](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/admin_panel.PNG?raw=true)
-![login](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/login.PNG?raw=true)
-![montaj](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/montaj.PNG?raw=true)
-![add](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/parca_ekleme.PNG?raw=true)
-![list](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/parca_listele.PNG?raw=true)
+![mainPage](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/giris_ekrani.PNG?raw=true) \ \
+![admin](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/admin_panel.PNG?raw=true) \ \
+![login](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/login.PNG?raw=true) \ \
+![montaj](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/montaj.PNG?raw=true) \ \
+![add](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/parca_ekleme.PNG?raw=true) \ \
+![list](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/parca_listele.PNG?raw=true) \ \

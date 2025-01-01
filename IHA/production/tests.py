@@ -2,103 +2,98 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 from .models import WingPart, Employee, AircraftName, Team, BodyPart, AirCraft, TailPart, AvionicsPart
-from .forms import WingPartForm
+from .forms import WingPartForm, BodyPartForm, TailPartForm, AvionicsPartForm
 from django.contrib.messages import get_messages
 
-# class AddWingPartViewTest(TestCase):
+class AddWingPartViewTest(TestCase):
 
-#     def setUp(self):
-#         # Create a user with the 'kanat' team
-#         self.user = User.objects.create_user(username='wing_user', password='password123')
-#         self.employee = Employee.objects.create(user=self.user, team=Team.kanat.value)
+    def setUp(self):
+        # Create a user with the 'kanat' team
+        self.user = User.objects.create_user(username='wing_user', password='password123')
+        self.employee = Employee.objects.create(user=self.user, team=Team.kanat.value)
         
-#         self.client.login(username='wing_user', password='password123')
+        self.client.login(username='wing_user', password='password123')
         
-#         self.valid_data = {
-#             'aircraftname': AircraftName.TB2.value,
-#             'status': 'unused',
-#         }
-#         self.invalid_data = {
-#             'aircraftname': '',  # Missing required field
-#             'status': 'unused',
-#         }
+        self.valid_data = {
+            'aircraftname': AircraftName.TB2.value,
+            'status': 'unused',
+        }
+        self.invalid_data = {
+            'aircraftname': '',  # Missing required field
+            'status': 'unused',
+        }
 
-#     def test_authorized_user_adds_part(self):
-#         response = self.client.post(reverse('add_wing_part'), data=self.valid_data)
-#         self.assertRedirects(response, reverse('listParts'))
-#         self.assertTrue(WingPart.objects.filter(aircraftname=AircraftName.TB2.value).exists())
-#         messages = list(get_messages(response.wsgi_request))
-#         self.assertEqual(str(messages[0]), "Kanat Parcasi basari ile eklendi.")
+    def test_authorized_user_adds_part(self):
+        response = self.client.post(reverse('add_wing_part'), data=self.valid_data)
+        self.assertRedirects(response, reverse('listParts'))
+        self.assertTrue(WingPart.objects.filter(aircraftname=AircraftName.TB2.value).exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(str(messages[0]), "Kanat Parcasi basari ile eklendi.")
 
-#     def test_unauthorized_user_access(self):
-#         # Create a user with a different team
-#         other_user = User.objects.create_user(username='body_user', password='password123')
-#         Employee.objects.create(user=other_user, team=Team.govde.value)  # Team not authorized
+    def test_unauthorized_user_access(self):
+        # Create a user with a different team
+        other_user = User.objects.create_user(username='body_user', password='password123')
+        Employee.objects.create(user=other_user, team=Team.govde.value)  # Team not authorized
         
-#         self.client.login(username='body_user', password='password123')
+        self.client.login(username='body_user', password='password123')
         
-#         response = self.client.post(reverse('add_wing_part'), data=self.valid_data)
-#         self.assertRedirects(response, reverse('index'))
-#         self.assertFalse(WingPart.objects.filter(aircraftname=AircraftName.TB2.value).exists())
-#         messages = list(get_messages(response.wsgi_request))
-#         self.assertEqual(str(messages[0]), "Bu sayfaya erismek icin yetkili degilsiniz.")
+        response = self.client.post(reverse('add_wing_part'), data=self.valid_data)
+        self.assertRedirects(response, reverse('index'))
+        self.assertFalse(WingPart.objects.filter(aircraftname=AircraftName.TB2.value).exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(str(messages[0]), "Bu sayfaya erismek icin yetkili degilsiniz.")
 
-#     def test_invalid_form_submission(self):
-#         response = self.client.post(reverse('add_wing_part'), data=self.invalid_data)
-#         self.assertRedirects(response, reverse('produceParts'))
-#         self.assertFalse(WingPart.objects.exists())
-#         messages = list(get_messages(response.wsgi_request))
-#         self.assertEqual(str(messages[0]), "Kanat Parcasi eklenirken bir soun olustu.")
+    def test_invalid_form_submission(self):
+        response = self.client.post(reverse('add_wing_part'), data=self.invalid_data)
+        self.assertRedirects(response, reverse('produceParts'))
+        self.assertFalse(WingPart.objects.exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(str(messages[0]), "Kanat Parcasi eklenirken bir soun olustu.")
 
-#     def test_get_request(self):
-#         response = self.client.get(reverse('add_wing_part'))
-#         self.assertRedirects(response, reverse('index'))
+    def test_get_request(self):
+        response = self.client.get(reverse('add_wing_part'))
+        self.assertRedirects(response, reverse('index'))
         
-# class DeletePartViewTest(TestCase):
+class DeletePartViewTest(TestCase):
 
-#     def setUp(self):
-#         # Create users and assign them to teams
-#         self.kanat_user = User.objects.create_user(username='kanat_user', password='password123')
-#         Employee.objects.create(user=self.kanat_user, team=Team.kanat.value)
+    def setUp(self):
+        # Create users and assign them to teams
+        self.kanat_user = User.objects.create_user(username='kanat_user', password='password123')
+        Employee.objects.create(user=self.kanat_user, team=Team.kanat.value)
 
-#         self.govde_user = User.objects.create_user(username='govde_user', password='password123')
-#         Employee.objects.create(user=self.govde_user, team=Team.govde.value)
+        self.govde_user = User.objects.create_user(username='govde_user', password='password123')
+        Employee.objects.create(user=self.govde_user, team=Team.govde.value)
 
-#         self.no_team_user = User.objects.create_user(username='no_team_user', password='password123')
+        self.no_team_user = User.objects.create_user(username='no_team_user', password='password123')
 
-#         # Create parts
-#         self.wing_part = WingPart.objects.create(aircraftname='TB2', status='unused')
-#         self.body_part = BodyPart.objects.create(aircraftname='AKINCI', status='used')
+        # Create parts
+        self.wing_part = WingPart.objects.create(aircraftname='TB2', status='unused')
+        self.body_part = BodyPart.objects.create(aircraftname='AKINCI', status='used')
 
-#     def test_authorized_user_deletes_part(self):
-#         self.client.login(username='kanat_user', password='password123')
-#         response = self.client.post(reverse('delete_part', args=[self.wing_part.id]))
-#         self.assertRedirects(response, reverse('listParts'))
-#         self.assertFalse(WingPart.objects.filter(id=self.wing_part.id).exists())
+    def test_authorized_user_deletes_part(self):
+        self.client.login(username='kanat_user', password='password123')
+        response = self.client.post(reverse('delete_part', args=[self.wing_part.id]))
+        self.assertRedirects(response, reverse('listParts'))
+        self.assertFalse(WingPart.objects.filter(id=self.wing_part.id).exists())
 
-#     def test_unauthorized_user_attempts_to_delete_part(self):
-#         self.client.login(username='govde_user', password='password123')
-#         response = self.client.post(reverse('delete_part', args=[self.wing_part.id]))
-#         #self.assertEqual(response.status_code, 403)
-#         self.assertTrue(WingPart.objects.filter(id=self.wing_part.id).exists())
 
-#     def test_user_without_team_attempts_to_delete_part(self):
-#         self.client.login(username='no_team_user', password='password123')
-#         response = self.client.post(reverse('delete_part', args=[self.wing_part.id]))
-#         self.assertRedirects(response, reverse('index'))
-#         messages = list(get_messages(response.wsgi_request))
-#         self.assertEqual(str(messages[0]), "Hicbir takima ait değilsiniz.")
-#         self.assertTrue(WingPart.objects.filter(id=self.wing_part.id).exists())
+    def test_user_without_team_attempts_to_delete_part(self):
+        self.client.login(username='no_team_user', password='password123')
+        response = self.client.post(reverse('delete_part', args=[self.wing_part.id]))
+        self.assertRedirects(response, reverse('index'))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(str(messages[0]), "Hicbir takima ait değilsiniz.")
+        self.assertTrue(WingPart.objects.filter(id=self.wing_part.id).exists())
 
-#     def test_non_existent_part_deletion(self):
-#         self.client.login(username='kanat_user', password='password123')
-#         response = self.client.post(reverse('delete_part', args=[999]))  # Non-existent ID
-#         self.assertEqual(response.status_code, 404)
+    def test_non_existent_part_deletion(self):
+        self.client.login(username='kanat_user', password='password123')
+        response = self.client.post(reverse('delete_part', args=[999]))  # Non-existent ID
+        self.assertEqual(response.status_code, 404)
 
-#     def test_anonymous_user_attempts_to_delete_part(self):
-#         response = self.client.post(reverse('delete_part', args=[self.wing_part.id]))
-#         #self.assertRedirects(response, f"{reverse('login')}?next={reverse('delete_part', args=[self.wing_part.id])}")
-#         self.assertTrue(WingPart.objects.filter(id=self.wing_part.id).exists())
+    def test_anonymous_user_attempts_to_delete_part(self):
+        response = self.client.post(reverse('delete_part', args=[self.wing_part.id]))
+        #self.assertRedirects(response, f"{reverse('login')}?next={reverse('delete_part', args=[self.wing_part.id])}")
+        self.assertTrue(WingPart.objects.filter(id=self.wing_part.id).exists())
 
 
 
@@ -221,3 +216,126 @@ class AssembleAndViewDronesTest(TestCase):
         self.assertRedirects(response, reverse("login"))
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(str(messages[0]), "Bu sayfaya erismek icin giris yapmaniz gerekiyor.")
+
+
+
+
+class ListPartsViewTests(TestCase):
+    def setUp(self):
+        # Create users
+        self.kanat_user = User.objects.create_user(username="kanat_user", password="password123")
+        self.govde_user = User.objects.create_user(username="govde_user", password="password123")
+        self.kuyruk_user = User.objects.create_user(username="kuyruk_user", password="password123")
+        self.aviyonik_user = User.objects.create_user(username="aviyonik_user", password="password123")
+        self.no_team_user = User.objects.create_user(username="no_team_user", password="password123")
+        
+        # Assign teams
+        Employee.objects.create(user=self.kanat_user, team=Team.kanat.value)
+        Employee.objects.create(user=self.govde_user, team=Team.govde.value)
+        Employee.objects.create(user=self.kuyruk_user, team=Team.kuyruk.value)
+        Employee.objects.create(user=self.aviyonik_user, team=Team.aviyonik.value)
+        
+        # Create parts
+        self.wing_part = WingPart.objects.create(aircraftname=AircraftName.AKINCI.value)
+        self.body_part = BodyPart.objects.create(aircraftname=AircraftName.AKINCI.value)
+        self.tail_part = TailPart.objects.create(aircraftname=AircraftName.AKINCI.value)
+        self.avionics_part = AvionicsPart.objects.create(aircraftname=AircraftName.AKINCI.value)
+
+    def test_user_without_team(self):
+        self.client.login(username="no_team_user", password="password123")
+        response = self.client.get(reverse("listParts"))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertRedirects(response, reverse("index"))
+        self.assertIn("Hicbir takima ait değilsiniz.", str(messages[0]))
+
+
+    def test_list_parts_for_kanat_team(self):
+        self.client.login(username="kanat_user", password="password123")
+        response = self.client.get(reverse("listParts"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "production/list_parts.html")
+        self.assertContains(response, self.wing_part.aircraftname)
+
+    def test_list_parts_for_govde_team(self):
+        self.client.login(username="govde_user", password="password123")
+        response = self.client.get(reverse("listParts"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "production/list_parts.html")
+        self.assertContains(response, self.body_part.aircraftname)
+
+    def test_list_parts_for_kuyruk_team(self):
+        self.client.login(username="kuyruk_user", password="password123")
+        response = self.client.get(reverse("listParts"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "production/list_parts.html")
+        self.assertContains(response, self.tail_part.aircraftname)
+
+    def test_list_parts_for_aviyonik_team(self):
+        self.client.login(username="aviyonik_user", password="password123")
+        response = self.client.get(reverse("listParts"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "production/list_parts.html")
+        self.assertContains(response, self.avionics_part.aircraftname)
+
+    def test_unauthenticated_user_redirect(self):
+        response = self.client.get(reverse("listParts"))
+        self.assertRedirects(response, reverse("login"))
+
+
+
+
+
+class ProducePartsViewTests(TestCase):
+    def setUp(self):
+        # Create users
+        self.kanat_user = User.objects.create_user(username="kanat_user", password="password123")
+        self.govde_user = User.objects.create_user(username="govde_user", password="password123")
+        self.kuyruk_user = User.objects.create_user(username="kuyruk_user", password="password123")
+        self.aviyonik_user = User.objects.create_user(username="aviyonik_user", password="password123")
+        self.no_team_user = User.objects.create_user(username="no_team_user", password="password123")
+        
+        # Assign teams
+        Employee.objects.create(user=self.kanat_user, team=Team.kanat.value)
+        Employee.objects.create(user=self.govde_user, team=Team.govde.value)
+        Employee.objects.create(user=self.kuyruk_user, team=Team.kuyruk.value)
+        Employee.objects.create(user=self.aviyonik_user, team=Team.aviyonik.value)
+
+    def test_user_without_team(self):
+        self.client.login(username="no_team_user", password="password123")
+        response = self.client.get(reverse("produceParts"))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertRedirects(response, reverse("index"))
+        self.assertIn("Hicbir takima ait değilsiniz.", str(messages[0]))
+
+
+    def test_produce_parts_for_kanat_team(self):
+        self.client.login(username="kanat_user", password="password123")
+        response = self.client.get(reverse("produceParts"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "production/produce_parts.html")
+        self.assertIsInstance(response.context["form"], WingPartForm)
+
+    def test_produce_parts_for_govde_team(self):
+        self.client.login(username="govde_user", password="password123")
+        response = self.client.get(reverse("produceParts"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "production/produce_parts.html")
+        self.assertIsInstance(response.context["form"], BodyPartForm)
+
+    def test_produce_parts_for_kuyruk_team(self):
+        self.client.login(username="kuyruk_user", password="password123")
+        response = self.client.get(reverse("produceParts"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "production/produce_parts.html")
+        self.assertIsInstance(response.context["form"], TailPartForm)
+
+    def test_produce_parts_for_aviyonik_team(self):
+        self.client.login(username="aviyonik_user", password="password123")
+        response = self.client.get(reverse("produceParts"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "production/produce_parts.html")
+        self.assertIsInstance(response.context["form"], AvionicsPartForm)
+
+    def test_unauthenticated_user_redirect(self):
+        response = self.client.get(reverse("produceParts"))
+        self.assertRedirects(response, reverse("login"))
