@@ -58,11 +58,17 @@ docker exec -it django_app python manage.py test
 docker exec -it django_app  python manage.py add_users
 ```
 -automatically generated user account information:
-kanat_user password123
-govde_user password123 
-kuyruk_user password123
-aviyonik_user password123
-montaj_user password123
+kanat_user password123 \
+govde_user password123  \
+kuyruk_user password123 \ 
+aviyonik_user password123 \
+montaj_user password123 \
+
+\
+# How application works
+-Registered users can do their jobs after being assigned to teams from the admin page. \
+-Teams that produce parts (wing, body, tail, avionics) can produce their own parts from the parts production page and list their own produced parts and delete their own parts. \
+-The assembly team can combine parts and produce aircraft and display the produced aircraft in a table. \
 
 
 # App screenshots
