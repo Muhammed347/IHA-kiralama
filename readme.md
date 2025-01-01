@@ -52,10 +52,10 @@ docker-compose up
 docker exec -it django_app python manage.py test
 ```
 
-
-![Alt text](images/giris_ekrani.png)
-![Alt text](images/admin_panel.png)
-![Alt text](images/login.png)
-![Alt text](images/montaj.png)
-![Alt text](images/parca_ekleme.png)
-![Alt text](images/parca_listele.png)
+# App screenshots
+![mainPage](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/giris_ekrani.PNG?raw=true)
+![admin](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/admin_panel.PNG?raw=true)
+![login](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/login.PNG?raw=true)
+![montaj](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/montaj.PNG?raw=true)
+![add](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/parca_ekleme.PNG?raw=true)
+![list](https://github.com/Muhammed347/IHA-kiralama/blob/main/images/parca_listele.PNG?raw=true)
