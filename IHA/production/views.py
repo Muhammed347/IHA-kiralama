@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponseForbidden
 from django.contrib import messages
 from .models import WingPart, BodyPart, AvionicsPart, TailPart, AirCraft
 from .forms import WingPartForm, BodyPartForm, AirCraftForm, TailPartForm, AvionicsPartForm
-from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from functools import wraps
 from django.http import JsonResponse
 # Create your views here.
@@ -274,8 +273,8 @@ def add_wing_part(request):
             return redirect('listParts')
         else:
             messages.error(request, "Kanat Parcasi eklenirken bir soun olustu.")
+            return redirect('produceParts')
     else:
-        messages.error(request, "Kanat parcasi ekleme yetkiniz yok.")
         return redirect('index')
 
 @login_required_with_message
@@ -289,8 +288,8 @@ def add_body_part(request):
             return redirect('listParts')
         else:
             messages.error(request, "Govde Parcasi eklenirken bir soun olustu.")
+            return redirect('produceParts')
     else:
-        messages.error(request, "Govde parcasi ekleme yetkiniz yok.")
         return redirect('index')
 
 @login_required_with_message
@@ -305,7 +304,6 @@ def add_tail_part(request):
         else:
             messages.error(request, "Kuyruk Parcasi eklenirken bir soun olustu.")
     else:
-        messages.error(request, "Kuyruk parcasi ekleme yetkiniz yok.")
         return redirect('index')
 
 @login_required_with_message
@@ -320,7 +318,6 @@ def add_avionik_part(request):
         else:
             messages.error(request, "Aviyonik Parcasi eklenirken bir soun olustu.")
     else:
-        messages.error(request, "Aviyonik parcasi ekleme yetkiniz yok.")
         return redirect('index')
     
 
